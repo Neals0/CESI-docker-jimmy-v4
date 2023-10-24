@@ -1,0 +1,43 @@
+version: '3'
+services:
+  # Service de la base de données MariaDB
+  db:
+    image: mariadb
+    container_name: my-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bdd_test_v1
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  # Service de l'application React
+  app:
+    build:
+      context: ./my-react-app
+      dockerfile: Dockerfile
+    container_name: my-react-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+  # Service phpMyAdmin pour l'administration de la base de données
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: my-phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
